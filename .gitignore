@@ -1,0 +1,4 @@
+*.xlsx
+*.xlsm
+settings.py
+settings.json
