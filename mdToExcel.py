@@ -40,8 +40,9 @@ class MdToExcel:
     def readFolder(self):
         # 対象のフォルダ内のファイルを全部読み込んで、リストに格納
 
-        searchPath=(self.stng.inputMdFolder+"\\**\\**.md").replace("\\\\", "\\")
-        self.targetPaths=glob.glob(searchPath,recursive=True)
+        # searchPath=(self.stng.inputMdFolder+"\\**\\**.md").replace("\\\\", "\\")
+        searchPath=(self.stng.inputMdFolder+"\\**\\**.*").replace("\\\\", "\\")
+        self.targetPaths=[p for p in glob.glob(searchPath,recursive=True) if os.path.isfile(p)]
         print(self.targetPaths)
         return
 
@@ -49,12 +50,24 @@ class MdToExcel:
         # 対象のデータを順次変換
 
         for path in self.targetPaths:
-            self.mta.read(path)
-            self.ate.setBook(self.mta.book)
-            savePath=path.replace(self.stng.inputMdFolder, self.stng.outputExFolder)
-            extension=self.stng.templateBookPath[self.stng.templateBookPath.find("."):]
-            savePath=savePath.replace(".md", extension)
-            self.ate.generateBook(savePath,self.stng.font,self.stng.size)
+
+            if ".git" in path:
+                continue
+
+            if path[-3:]==".md":
+                self.mta.read(path)
+                self.ate.setBook(self.mta.book)
+                savePath=path.replace(self.stng.inputMdFolder, self.stng.outputExFolder)
+                extension=self.stng.templateBookPath[self.stng.templateBookPath.find("."):]
+                savePath=savePath.replace(".md", extension)
+                self.ate.generateBook(savePath,self.stng.font,self.stng.size)
+            else:
+                savePath=path.replace(self.stng.inputMdFolder, self.stng.outputExFolder)
+                
+                if not os.path.exists(savePath):
+                    os.makedirs(savePath)
+                shutil.copy(path,savePath)
+
 
 
 if __name__ == "__main__":
