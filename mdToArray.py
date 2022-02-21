@@ -18,6 +18,7 @@ class MdToArray:
         self.compile()
         return
 
+    # todo : ちょっとこれは汚い｡
     def compile(self):
         self.book = Book()
         lines = self.md.split("\n")
