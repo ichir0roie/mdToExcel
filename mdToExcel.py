@@ -63,9 +63,10 @@ class MdToExcel:
                 self.ate.generateBook(savePath,self.stng.font,self.stng.size)
             else:
                 savePath=path.replace(self.stng.inputMdFolder, self.stng.outputExFolder)
-                
-                if not os.path.exists(savePath):
-                    os.makedirs(savePath)
+                saveDir=savePath.replace("\\", "/")
+                saveDir=saveDir[:saveDir.rfind("/")]
+                if not os.path.exists(saveDir):
+                    os.makedirs(saveDir)
                 shutil.copy(path,savePath)
 
 
