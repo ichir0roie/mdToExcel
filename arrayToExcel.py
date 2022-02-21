@@ -19,6 +19,8 @@ class ArrayToExcel:
 
         self.baseFont=None
 
+        # self.templateWb=None
+
         return
 
     def setBook(self, book: Book):
@@ -30,6 +32,10 @@ class ArrayToExcel:
         self.templateSheetName = templateSheetName
         self.startCol = startCol
         self.startRow = startRow
+
+        # cant't copy sheet from book A to book B.
+        # self.templateWb=load_workbook(filename=self.templateBookPath, keep_vba=True,read_only=False)
+        
 
     def generateBook(self,outputPath:str,font:str,size):
         
@@ -51,9 +57,12 @@ class ArrayToExcel:
                 std=wb.get_sheet_by_name(sheet.sheetName)
                 wb.remove_sheet(std)
                 
-            
-            ws = wb.copy_worksheet(
-                wb.get_sheet_by_name(self.templateSheetName))
+            ws=None
+            if self.templateSheetName in wb.sheetnames:
+                ws = wb.copy_worksheet(
+                    wb.get_sheet_by_name(self.templateSheetName))
+            else:
+                ws=wb.create_sheet()
             ws.title = sheet.sheetName
             # rootFont=ws.cell(self.startRow+1, self.startCol+1).font
             # self.baseFont=Font(name=rootFont.name,sz=rootFont.sz)

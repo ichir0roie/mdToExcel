@@ -36,45 +36,56 @@ class MdToExcel:
 
         self.targetPaths = []
 
+        self.readFolder()
+
+
+    # まずエクセル共をコピーして貼り付けておく｡
+    def copyExcels(self):
+        targets=[p for p in self.targetPaths if not ".md" in p]
+
+        for path in targets:
+            self.save(path)
+
+        return
 
     def readFolder(self):
         # 対象のフォルダ内のファイルを全部読み込んで、リストに格納
 
-        # searchPath=(self.stng.inputMdFolder+"\\**\\**.md").replace("\\\\", "\\")
         searchPath=(self.stng.inputMdFolder+"\\**\\**.*").replace("\\\\", "\\")
         self.targetPaths=[p for p in glob.glob(searchPath,recursive=True) if os.path.isfile(p)]
-        print(self.targetPaths)
+        self.targetPaths=[p for p in self.targetPaths if not ".git" in p]
+        if not test:
+            self.targetPaths=[p for p in self.targetPaths if not "test" in p]
+        else:
+            self.targetPaths=[p for p in self.targetPaths if "test" in p]
         return
 
     def generate(self):
         # 対象のデータを順次変換
 
-        for path in self.targetPaths:
+        targets=[p for p in self.targetPaths if ".md" in p]
 
-            if ".git" in path:
-                continue
+        for path in targets:
+            self.mta.read(path)
+            self.ate.setBook(self.mta.book)
+            savePath=path.replace(self.stng.inputMdFolder, self.stng.outputExFolder)
+            extension=self.stng.templateBookPath[self.stng.templateBookPath.find("."):]
+            savePath=savePath.replace(".md", extension)
+            self.ate.generateBook(savePath,self.stng.font,self.stng.size)
 
-            if path[-3:]==".md":
-                self.mta.read(path)
-                self.ate.setBook(self.mta.book)
-                savePath=path.replace(self.stng.inputMdFolder, self.stng.outputExFolder)
-                extension=self.stng.templateBookPath[self.stng.templateBookPath.find("."):]
-                savePath=savePath.replace(".md", extension)
-                self.ate.generateBook(savePath,self.stng.font,self.stng.size)
-            else:
-                savePath=path.replace(self.stng.inputMdFolder, self.stng.outputExFolder)
-                saveDir=savePath.replace("\\", "/")
-                saveDir=saveDir[:saveDir.rfind("/")]
-                if not os.path.exists(saveDir):
-                    os.makedirs(saveDir)
-                shutil.copy(path,savePath)
-
-
+    def save(self,path):
+        savePath=path.replace(self.stng.inputMdFolder, self.stng.outputExFolder)
+        saveDir=savePath.replace("\\", "/")
+        saveDir=saveDir[:saveDir.rfind("/")]
+        if not os.path.exists(saveDir):
+            os.makedirs(saveDir)
+        shutil.copy(path,savePath)
 
 if __name__ == "__main__":
+    # test=True
+
     m = MdToExcel()
-    # print(m.settings)
-    m.readFolder()
+    m.copyExcels()
     m.generate()
 
 

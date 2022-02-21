@@ -43,3 +43,7 @@ class Settings:
 
             self.listPlusIndentSpaces=self.stng["listPlusIndentSpaces"]
             self.listNumIndentSpaces=self.stng["listNumIndentSpaces"]
+
+
+
+test=False
