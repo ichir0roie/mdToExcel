@@ -24,9 +24,10 @@ class MdToArray:
         lines = self.md.split("\n")
         sheet = []
         # part,chapter,section,subsection
-        pcss = [0, 0, 0, 0]
+        pcss = []
         sheetName = ""
         indent = 0
+        indentBefore=0
         for line in lines:
             column = []
             if len(line) <= 0:
@@ -36,11 +37,15 @@ class MdToArray:
             p = 0
             while line[p] == "#":
                 p += 1
-            if p > 4:
-                p = 4
-                print("warning : deep indent. bad.")
+            # if p > 4:
+            #     p = 4
+            #     print("warning : deep indent. bad.")
             if p > 1:  # pcss
+                indentBefore=indent
                 indent = p-1-1
+                if indentBefore>indent:
+                    pcss[indentBefore]=0
+                if len(pcss)<= indent:pcss.append(0)
                 pcss[indent] = pcss[indent]+1
                 column.extend([""for i in range(indent)])
                 column.append(str(pcss[indent])+".")
@@ -52,7 +57,9 @@ class MdToArray:
                     self.book.addSheet(sheetName, sheet)
                 sheetName = line[p+1:]
                 sheet = []
-                pcss = [0, 0, 0, 0]
+                pcss = [0]
+                indent=0
+                indentBefore=0
                 continue
             # for list format
             if line[0] == " " or line[0] == "+" or line[1] == ".":

@@ -82,7 +82,7 @@ class MdToExcel:
         shutil.copy(path,savePath)
 
 if __name__ == "__main__":
-    # test=True
+    test=True
 
     m = MdToExcel()
     m.copyExcels()
