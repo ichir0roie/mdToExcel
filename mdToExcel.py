@@ -58,7 +58,9 @@ class MdToExcel:
             self.targetPaths=[p for p in self.targetPaths if not "test" in p]
         else:
             self.targetPaths=[p for p in self.targetPaths if "test" in p]
-        return
+
+        for ext in self.stng.extracts:
+            self.targetPaths=[p for p in self.targetPaths if ext not in p]
 
     def generate(self):
         # 対象のデータを順次変換
@@ -82,7 +84,7 @@ class MdToExcel:
         shutil.copy(path,savePath)
 
 if __name__ == "__main__":
-    test=True
+    #test=True
 
     m = MdToExcel()
     m.copyExcels()

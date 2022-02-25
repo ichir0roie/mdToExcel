@@ -27,6 +27,8 @@ class Settings:
         self.font=None
         self.size=None
 
+        self.extracts=[]
+
         if os.path.exists(path):
             with open(path,mode="r",encoding="utf-8")as f:
                 text=f.read()
@@ -43,7 +45,7 @@ class Settings:
 
             self.listPlusIndentSpaces=self.stng["listPlusIndentSpaces"]
             self.listNumIndentSpaces=self.stng["listNumIndentSpaces"]
-
+            self.extracts=self.stng["extracts"]
 
 
 test=False
