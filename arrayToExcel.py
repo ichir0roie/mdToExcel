@@ -12,6 +12,7 @@ from openpyxl.styles import Font
 class ArrayToExcel:
     def __init__(self):
         self.book = None
+        self.books=[]
         self.templateBookPath=None
         self.templateSheetName = None
         self.startRow = None
@@ -22,9 +23,16 @@ class ArrayToExcel:
         # self.templateWb=None
 
         return
+    
+    def reset(self):
+        self.book=None
+        self.books=[]
 
     def setBook(self, book: Book):
         self.book = book
+
+    def addBook(self,book:Book):
+        self.books.append(book)
 
     def readTemplate(self, path, templateSheetName: str, startRow: int, startCol: int):
         # self.wb = load_workbook(filename=path, keep_vba=True)
@@ -73,6 +81,48 @@ class ArrayToExcel:
                     if column != "":
                         self.__setVal(ws, r+1, c+1, column)
         
+        wb.save(outputPath)
+
+        wb.close()
+
+        return
+
+    def generateBooks(self,outputPath:str,font:str,size):
+        
+        outputDir=outputPath[0:outputPath.rfind("\\")]
+        if not os.path.exists(outputPath):
+            if not os.path.exists(outputDir):
+                os.makedirs(outputDir)
+            shutil.copy(self.templateBookPath, outputPath)
+            # wb=load_workbook(filename=self.templateBookPath, keep_vba=True,read_only=False)
+
+        wb=load_workbook(outputPath,keep_vba=True,read_only=False)
+        for book in self.books:
+            for sheet in book.sheets:  # type:Sheet
+                print(sheet.sheetName)
+                print(sheet.data)
+                
+                #delete before created sheet
+                if sheet.sheetName in wb.sheetnames:
+                    std=wb.get_sheet_by_name(sheet.sheetName)
+                    wb.remove_sheet(std)
+                    
+                ws=None
+                if self.templateSheetName in wb.sheetnames:
+                    ws = wb.copy_worksheet(
+                        wb.get_sheet_by_name(self.templateSheetName))
+                else:
+                    ws=wb.create_sheet()
+                ws.title = sheet.sheetName
+                # rootFont=ws.cell(self.startRow+1, self.startCol+1).font
+                # self.baseFont=Font(name=rootFont.name,sz=rootFont.sz)
+                self.baseFont=Font(name=font,size=size)
+
+                for r, row in enumerate(sheet.data):
+                    for c, column in enumerate(row):
+                        if column != "":
+                            self.__setVal(ws, r+1, c+1, column)
+
         wb.save(outputPath)
 
         wb.close()

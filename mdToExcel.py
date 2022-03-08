@@ -34,34 +34,39 @@ class MdToExcel:
         #     text = f.read()
         #     self.settings = json.loads(text)
 
-        self.targetPaths = []
+        self.dirs = []
 
         self.readFolder()
 
 
     # まずエクセル共をコピーして貼り付けておく｡
     def copyExcels(self):
-        targets=[p for p in self.targetPaths if not ".md" in p]
 
-        for path in targets:
-            self.save(path)
+        for dir in self.dirs:
+            targets=[p for p in glob.glob(dir+"**.*") if os.path.isfile(p) and not ".md" in p]
+    
+            for path in targets:
+                self.save(path)
 
         return
 
     def readFolder(self):
         # 対象のフォルダ内のファイルを全部読み込んで、リストに格納
+        # ↓
+        # フォルダ単位で検索して､ret!
 
-        searchPath=(self.stng.inputMdFolder+"\\**\\**.*").replace("\\\\", "\\")
-        self.targetPaths=[p for p in glob.glob(searchPath,recursive=True) if os.path.isfile(p)]
-        self.targetPaths=[p for p in self.targetPaths if not ".git" in p]
+        searchPath=(self.stng.inputMdFolder+"\\**\\").replace("\\\\", "\\")
+        self.dirs=[p for p in glob.glob(searchPath,recursive=False) if not os.path.isfile(p)]
+        print(self.dirs)
+        self.dirs=[p for p in self.dirs if not ".git" in p]
         if not test:
-            self.targetPaths=[p for p in self.targetPaths if not "test" in p]
+            self.dirs=[p for p in self.dirs if not "test" in p]
         else:
-            self.targetPaths=[p for p in self.targetPaths if "test" in p]
+            self.dirs=[p for p in self.dirs if "test" in p]
 
         for ext in self.stng.extracts:
-            self.targetPaths=[p for p in self.targetPaths if ext not in p]
-
+            self.dirs=[p for p in self.dirs if ext not in p]
+    
     def generate(self):
         # 対象のデータを順次変換
 
@@ -75,6 +80,26 @@ class MdToExcel:
             savePath=savePath.replace(".md", extension)
             self.ate.generateBook(savePath,self.stng.font,self.stng.size)
 
+    def generateByDir(self):
+        # 対象のデータを順次変換
+        for dir in self.dirs:
+            targets=[p for p in glob.glob(dir+"\\**.md") if os.path.isfile(p)]
+            
+            self.ate.reset()
+            for path in targets:
+                self.mta.read(path)
+                self.ate.addBook(self.mta.book)
+            self.generates(dir)
+
+    def generates(self,dir):
+            savePath=dir.replace(self.stng.inputMdFolder, self.stng.outputExFolder)
+            if savePath[-1]=="\\":savePath=savePath[:-1]
+            savePath=savePath+".xlsm"
+            extension=self.stng.templateBookPath[self.stng.templateBookPath.find("."):]
+            savePath=savePath.replace(".md", extension)
+            self.ate.generateBooks(savePath,self.stng.font,self.stng.size)
+
+
     def save(self,path):
         savePath=path.replace(self.stng.inputMdFolder, self.stng.outputExFolder)
         saveDir=savePath.replace("\\", "/")
@@ -84,10 +109,12 @@ class MdToExcel:
         shutil.copy(path,savePath)
 
 if __name__ == "__main__":
-    #test=True
+    # test=True
 
     m = MdToExcel()
+
+    
     m.copyExcels()
-    m.generate()
+    m.generateByDir()
 
 

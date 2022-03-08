@@ -10,9 +10,11 @@ class MdToArray:
     def __init__(self):
         self.md = ""
         self.book = Book()
+        self.fileName=None
         return
 
     def read(self, path: str):
+        self.fileName=path.replace("\\", "/").split("/")[-1].replace(".md", "")
         with open(path, encoding="utf-8", mode="r")as f:
             self.md = f.read()
         self.compile()
@@ -40,9 +42,9 @@ class MdToArray:
             # if p > 4:
             #     p = 4
             #     print("warning : deep indent. bad.")
-            if p > 1:  # pcss
+            if p > 0:  # pcss
                 indentBefore=indent
-                indent = p-1-1
+                indent = p-1
                 if indentBefore>indent:
                     pcss[indentBefore]=0
                 if len(pcss)<= indent:pcss.append(0)
@@ -52,15 +54,16 @@ class MdToArray:
                 column.append(line[p+1:])
                 sheet.append(column)
                 continue
-            elif p == 1:  # sheet
-                if sheetName != "" and len(sheet) > 0:
-                    self.book.addSheet(sheetName, sheet)
-                sheetName = line[p+1:]
-                sheet = []
-                pcss = [0]
-                indent=0
-                indentBefore=0
-                continue
+            # elif p == 1:  # sheet
+            #     if sheetName != "" and len(sheet) > 0:
+            #         self.book.addSheet(sheetName, sheet)
+            #     sheetName = line[p+1:]
+            #     sheet = []
+            #     pcss = [0]
+            #     indent=0
+            #     indentBefore=0
+            #     continue
+
             # for list format
             if line[0] == " " or line[0] == "+" or line[1] == ".":
                 listIndent = 0
@@ -86,8 +89,11 @@ class MdToArray:
                 column.append(line[p:])
             sheet.append(column)
         
-        if sheetName != "" and len(sheet) > 0:
-            self.book.addSheet(sheetName, sheet)
+        # change page
+        self.book.addSheet(self.fileName, sheet)
+
+
+
 
     def printBook(self):
         for sheet in self.book.sheets:  # type:Sheet
