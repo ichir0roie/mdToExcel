@@ -1,4 +1,4 @@
-*.xlsx
-*.xlsm
+template.xlsm
+CombineSheets.xlsm
 settings.py
 settings.json

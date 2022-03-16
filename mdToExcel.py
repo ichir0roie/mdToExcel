@@ -94,9 +94,10 @@ class MdToExcel:
     def generates(self,dir):
             savePath=dir.replace(self.stng.inputMdFolder, self.stng.outputExFolder)
             if savePath[-1]=="\\":savePath=savePath[:-1]
-            savePath=savePath+".xlsm"
+            fileName=savePath.split("\\")[-1]
+            savePath=savePath+"\\"+fileName+".md.xlsm"
             extension=self.stng.templateBookPath[self.stng.templateBookPath.find("."):]
-            savePath=savePath.replace(".md", extension)
+            # savePath=savePath.replace(".md", extension)
             self.ate.generateBooks(savePath,self.stng.font,self.stng.size)
 
 
