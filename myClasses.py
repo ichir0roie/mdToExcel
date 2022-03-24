@@ -22,6 +22,8 @@ class Settings:
         self.templateSheetName=None
         self.inputMdFolder=None
         self.outputExFolder=None
+        self.combineFolder=None
+        self.ignoreSheetNames=None
         self.startRow=None
         self.startCol=None
         self.font=None
@@ -38,6 +40,8 @@ class Settings:
             self.templateSheetName=self.stng["templateSheetName"]
             self.inputMdFolder=self.stng["inputMdFolder"]
             self.outputExFolder=self.stng["outputExFolder"]
+            self.combineFolder=self.stng["combineFolder"]
+            self.ignoreSheetNames=self.stng["ignoreSheetNames"]
             self.startRow=self.stng["startRow"]
             self.startCol=self.stng["startCol"]
             self.font=self.stng["font"]

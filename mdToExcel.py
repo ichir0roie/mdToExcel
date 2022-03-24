@@ -13,6 +13,7 @@ from myClasses import *
 import os
 import shutil
 
+import combineBooks
 
 
 class MdToExcel:
@@ -41,6 +42,10 @@ class MdToExcel:
 
     # まずエクセル共をコピーして貼り付けておく｡
     def copyExcels(self):
+
+        
+        self.deleteInitOutputFolder()
+        self.deleteInitCombineFolder()
 
         for dir in self.dirs:
             targets=[p for p in glob.glob(dir+"**.*") if os.path.isfile(p) and not ".md" in p]
@@ -108,6 +113,22 @@ class MdToExcel:
         if not os.path.exists(saveDir):
             os.makedirs(saveDir)
         shutil.copy(path,savePath)
+    
+    def deleteInitOutputFolder(self):
+        paths=glob.glob(self.stng.outputExFolder+"*")
+        for path in paths:
+            print(path)
+            shutil.rmtree(path)
+
+    def deleteInitCombineFolder(self):
+        files=glob.glob(self.stng.combineFolder+"*")
+        for file in files:
+            # print(file)
+            os.remove(file)
+    
+    def combine(self):
+        cb=combineBooks.CombineBooks()
+        cb.runVBA()
 
 if __name__ == "__main__":
     # test=True
@@ -115,7 +136,7 @@ if __name__ == "__main__":
     m = MdToExcel()
 
     
-    m.copyExcels()
+    m.copyExcels() 
     m.generateByDir()
-
+    m.combine()
 
