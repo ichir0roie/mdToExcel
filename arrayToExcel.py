@@ -81,6 +81,9 @@ class ArrayToExcel:
                     if column != "":
                         self.__setVal(ws, r+1, c+1, column)
         
+        std=wb.get_sheet_by_name('template')
+        wb.remove_sheet(std)
+
         wb.save(outputPath)
 
         wb.close()
